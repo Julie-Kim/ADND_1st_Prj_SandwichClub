@@ -6,4 +6,5 @@
     <dimen name="detail_text_size">18sp</dimen>
     <dimen name="text_padding">8dp</dimen>
     <dimen name="image_height">200dp</dimen>
+    <dimen name="progressbar_size">42dp</dimen>
 </resources>

@@ -7,9 +7,11 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.udacity.sandwichclub.model.Sandwich;
 import com.udacity.sandwichclub.utils.JsonUtils;
@@ -67,10 +69,37 @@ public class DetailActivity extends AppCompatActivity {
 
     private void setImage(String imageUrl) {
         ImageView sandwichImageView = findViewById(R.id.image_iv);
+        ProgressBar loadingIndicator = findViewById(R.id.loading_indicator);
+        loadingIndicator.setVisibility(View.VISIBLE);
 
         Picasso.with(this)
                 .load(imageUrl)
-                .into(sandwichImageView);
+                .into(sandwichImageView, new ImageLoadedCallback(loadingIndicator) {
+                    @Override
+                    public void onSuccess() {
+                        if (mLoadingIndicator != null) {
+                            mLoadingIndicator.setVisibility(View.INVISIBLE);
+                        }
+                    }
+                });
+    }
+
+    private class ImageLoadedCallback implements Callback {
+
+        ProgressBar mLoadingIndicator;
+
+        ImageLoadedCallback(ProgressBar loadingIndicator) {
+            mLoadingIndicator = loadingIndicator;
+        }
+
+        @Override
+        public void onSuccess() {
+        }
+
+        @Override
+        public void onError() {
+
+        }
     }
 
     private void setAlsoKnownAs(List<String> alsoKnownAsList) {
