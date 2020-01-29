@@ -73,4 +73,14 @@ public class Sandwich {
     public void setIngredients(List<String> ingredients) {
         this.ingredients = ingredients;
     }
+
+    @Override
+    public String toString() {
+        return "mainName: " + getMainName() +
+                "\nalsoKnownAs: " + getAlsoKnownAs() +
+                "\nplaceOfOrigin: " + getPlaceOfOrigin() +
+                "\ndescription: " + getDescription() +
+                "\nimage: " + getImage() +
+                "\ningredients: " + getIngredients();
+    }
 }

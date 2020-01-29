@@ -3,12 +3,18 @@ package com.udacity.sandwichclub;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.udacity.sandwichclub.model.Sandwich;
 import com.udacity.sandwichclub.utils.JsonUtils;
+
+import java.util.List;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -20,11 +26,10 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        ImageView ingredientsIv = findViewById(R.id.image_iv);
-
         Intent intent = getIntent();
         if (intent == null) {
             closeOnError();
+            return;
         }
 
         int position = intent.getIntExtra(EXTRA_POSITION, DEFAULT_POSITION);
@@ -43,11 +48,7 @@ public class DetailActivity extends AppCompatActivity {
             return;
         }
 
-        populateUI();
-        Picasso.with(this)
-                .load(sandwich.getImage())
-                .into(ingredientsIv);
-
+        populateUI(sandwich);
         setTitle(sandwich.getMainName());
     }
 
@@ -56,7 +57,80 @@ public class DetailActivity extends AppCompatActivity {
         Toast.makeText(this, R.string.detail_error_message, Toast.LENGTH_SHORT).show();
     }
 
-    private void populateUI() {
+    private void populateUI(Sandwich sandwich) {
+        setImage(sandwich.getImage());
+        setAlsoKnownAs(sandwich.getAlsoKnownAs());
+        setPlaceOfOrigin(sandwich.getPlaceOfOrigin());
+        setDescription(sandwich.getDescription());
+        setIngredients(sandwich.getIngredients());
+    }
 
+    private void setImage(String imageUrl) {
+        ImageView sandwichImageView = findViewById(R.id.image_iv);
+
+        Picasso.with(this)
+                .load(imageUrl)
+                .into(sandwichImageView);
+    }
+
+    private void setAlsoKnownAs(List<String> alsoKnownAsList) {
+        LinearLayout alsoKnownLayout = findViewById(R.id.also_known_layout);
+        TextView alsoKnownTextView = findViewById(R.id.also_known_tv);
+
+        if (alsoKnownAsList.isEmpty()) {
+            alsoKnownLayout.setVisibility(View.GONE);
+            return;
+        }
+
+        alsoKnownLayout.setVisibility(View.VISIBLE);
+        alsoKnownTextView.setText(joinString(alsoKnownAsList));
+    }
+
+    private void setPlaceOfOrigin(String placeOfOrigin) {
+        LinearLayout originLayout = findViewById(R.id.origin_layout);
+        TextView placeOfOriginTextView = findViewById(R.id.origin_tv);
+
+        if (TextUtils.isEmpty(placeOfOrigin)) {
+            originLayout.setVisibility(View.GONE);
+            return;
+        }
+
+        originLayout.setVisibility(View.VISIBLE);
+        placeOfOriginTextView.setText(placeOfOrigin);
+    }
+
+    private void setIngredients(List<String> ingredients) {
+        LinearLayout ingredientsLayout = findViewById(R.id.ingredients_layout);
+        TextView ingredientsTextView = findViewById(R.id.ingredients_tv);
+
+        if (ingredients.isEmpty()) {
+            ingredientsLayout.setVisibility(View.GONE);
+            return;
+        }
+
+        ingredientsLayout.setVisibility(View.VISIBLE);
+        ingredientsTextView.setText(joinString(ingredients));
+    }
+
+    private void setDescription(String description) {
+        LinearLayout descriptionLayout = findViewById(R.id.description_layout);
+        TextView descriptionTextView = findViewById(R.id.description_tv);
+
+        if (TextUtils.isEmpty(description)) {
+            descriptionLayout.setVisibility(View.GONE);
+            return;
+        }
+
+        descriptionLayout.setVisibility(View.VISIBLE);
+        descriptionTextView.setText(description);
+    }
+
+    private String joinString(List<String> stringList) {
+        String joinedString = "";
+        for (String string : stringList) {
+            joinedString = joinedString.concat(string + ", ");
+        }
+        joinedString = joinedString.substring(0, joinedString.length() - 2);
+        return joinedString;
     }
 }
