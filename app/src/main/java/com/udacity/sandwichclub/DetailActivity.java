@@ -18,15 +18,44 @@ import com.udacity.sandwichclub.utils.JsonUtils;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class DetailActivity extends AppCompatActivity {
 
     public static final String EXTRA_POSITION = "extra_position";
     private static final int DEFAULT_POSITION = -1;
 
+    @BindView(R.id.image_iv)
+    ImageView mSandwichImageView;
+    @BindView(R.id.loading_indicator)
+    ProgressBar mLoadingIndicator;
+
+    @BindView(R.id.also_known_layout)
+    LinearLayout mAlsoKnownLayout;
+    @BindView(R.id.also_known_tv)
+    TextView mAlsoKnownTextView;
+
+    @BindView(R.id.origin_layout)
+    LinearLayout mOriginLayout;
+    @BindView(R.id.origin_tv)
+    TextView mOriginTextView;
+
+    @BindView(R.id.ingredients_layout)
+    LinearLayout mIngredientsLayout;
+    @BindView(R.id.ingredients_tv)
+    TextView mIngredientsTextView;
+
+    @BindView(R.id.description_layout)
+    LinearLayout mDescriptionLayout;
+    @BindView(R.id.description_tv)
+    TextView mDescriptionTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+        ButterKnife.bind(this);
 
         Intent intent = getIntent();
         if (intent == null) {
@@ -68,13 +97,11 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void setImage(String imageUrl) {
-        ImageView sandwichImageView = findViewById(R.id.image_iv);
-        ProgressBar loadingIndicator = findViewById(R.id.loading_indicator);
-        loadingIndicator.setVisibility(View.VISIBLE);
+        mLoadingIndicator.setVisibility(View.VISIBLE);
 
         Picasso.with(this)
                 .load(imageUrl)
-                .into(sandwichImageView, new ImageLoadedCallback(loadingIndicator) {
+                .into(mSandwichImageView, new ImageLoadedCallback(mLoadingIndicator) {
                     @Override
                     public void onSuccess() {
                         if (mLoadingIndicator != null) {
@@ -103,55 +130,43 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void setAlsoKnownAs(List<String> alsoKnownAsList) {
-        LinearLayout alsoKnownLayout = findViewById(R.id.also_known_layout);
-        TextView alsoKnownTextView = findViewById(R.id.also_known_tv);
-
         if (alsoKnownAsList.isEmpty()) {
-            alsoKnownLayout.setVisibility(View.GONE);
+            mAlsoKnownLayout.setVisibility(View.GONE);
             return;
         }
 
-        alsoKnownLayout.setVisibility(View.VISIBLE);
-        alsoKnownTextView.setText(joinString(alsoKnownAsList));
+        mAlsoKnownLayout.setVisibility(View.VISIBLE);
+        mAlsoKnownTextView.setText(joinString(alsoKnownAsList));
     }
 
     private void setPlaceOfOrigin(String placeOfOrigin) {
-        LinearLayout originLayout = findViewById(R.id.origin_layout);
-        TextView placeOfOriginTextView = findViewById(R.id.origin_tv);
-
         if (TextUtils.isEmpty(placeOfOrigin)) {
-            originLayout.setVisibility(View.GONE);
+            mOriginLayout.setVisibility(View.GONE);
             return;
         }
 
-        originLayout.setVisibility(View.VISIBLE);
-        placeOfOriginTextView.setText(placeOfOrigin);
+        mOriginLayout.setVisibility(View.VISIBLE);
+        mOriginTextView.setText(placeOfOrigin);
     }
 
     private void setIngredients(List<String> ingredients) {
-        LinearLayout ingredientsLayout = findViewById(R.id.ingredients_layout);
-        TextView ingredientsTextView = findViewById(R.id.ingredients_tv);
-
         if (ingredients.isEmpty()) {
-            ingredientsLayout.setVisibility(View.GONE);
+            mIngredientsLayout.setVisibility(View.GONE);
             return;
         }
 
-        ingredientsLayout.setVisibility(View.VISIBLE);
-        ingredientsTextView.setText(joinString(ingredients));
+        mIngredientsLayout.setVisibility(View.VISIBLE);
+        mIngredientsTextView.setText(joinString(ingredients));
     }
 
     private void setDescription(String description) {
-        LinearLayout descriptionLayout = findViewById(R.id.description_layout);
-        TextView descriptionTextView = findViewById(R.id.description_tv);
-
         if (TextUtils.isEmpty(description)) {
-            descriptionLayout.setVisibility(View.GONE);
+            mDescriptionLayout.setVisibility(View.GONE);
             return;
         }
 
-        descriptionLayout.setVisibility(View.VISIBLE);
-        descriptionTextView.setText(description);
+        mDescriptionLayout.setVisibility(View.VISIBLE);
+        mDescriptionTextView.setText(description);
     }
 
     private String joinString(List<String> stringList) {
