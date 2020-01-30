@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,6 +52,11 @@ public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.description_tv)
     TextView mDescriptionTextView;
 
+    @BindView(R.id.sandwich_view)
+    ScrollView mSandwichView;
+    @BindView(R.id.error_message)
+    TextView mErrorMessageTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,14 +95,24 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void populateUI(Sandwich sandwich) {
-        setImage(sandwich.getImage());
-        setAlsoKnownAs(sandwich.getAlsoKnownAs());
-        setPlaceOfOrigin(sandwich.getPlaceOfOrigin());
-        setDescription(sandwich.getDescription());
-        setIngredients(sandwich.getIngredients());
+        boolean isValidData;
+
+        isValidData = setImage(sandwich.getImage());
+        isValidData |= setAlsoKnownAs(sandwich.getAlsoKnownAs());
+        isValidData |= setPlaceOfOrigin(sandwich.getPlaceOfOrigin());
+        isValidData |= setDescription(sandwich.getDescription());
+        isValidData |= setIngredients(sandwich.getIngredients());
+
+        if (isValidData) {
+            mSandwichView.setVisibility(View.VISIBLE);
+            mErrorMessageTextView.setVisibility(View.GONE);
+        } else {
+            mErrorMessageTextView.setVisibility(View.VISIBLE);
+            mSandwichView.setVisibility(View.GONE);
+        }
     }
 
-    private void setImage(String imageUrl) {
+    private boolean setImage(String imageUrl) {
         mLoadingIndicator.setVisibility(View.VISIBLE);
 
         Picasso.with(this)
@@ -109,6 +125,7 @@ public class DetailActivity extends AppCompatActivity {
                         }
                     }
                 });
+        return mLoadingIndicator.getVisibility() == View.INVISIBLE;
     }
 
     private class ImageLoadedCallback implements Callback {
@@ -129,44 +146,48 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
-    private void setAlsoKnownAs(List<String> alsoKnownAsList) {
+    private boolean setAlsoKnownAs(List<String> alsoKnownAsList) {
         if (alsoKnownAsList.isEmpty()) {
             mAlsoKnownLayout.setVisibility(View.GONE);
-            return;
+            return false;
         }
 
         mAlsoKnownLayout.setVisibility(View.VISIBLE);
         mAlsoKnownTextView.setText(joinString(alsoKnownAsList));
+        return true;
     }
 
-    private void setPlaceOfOrigin(String placeOfOrigin) {
+    private boolean setPlaceOfOrigin(String placeOfOrigin) {
         if (TextUtils.isEmpty(placeOfOrigin)) {
             mOriginLayout.setVisibility(View.GONE);
-            return;
+            return false;
         }
 
         mOriginLayout.setVisibility(View.VISIBLE);
         mOriginTextView.setText(placeOfOrigin);
+        return true;
     }
 
-    private void setIngredients(List<String> ingredients) {
+    private boolean setIngredients(List<String> ingredients) {
         if (ingredients.isEmpty()) {
             mIngredientsLayout.setVisibility(View.GONE);
-            return;
+            return false;
         }
 
         mIngredientsLayout.setVisibility(View.VISIBLE);
         mIngredientsTextView.setText(joinString(ingredients));
+        return true;
     }
 
-    private void setDescription(String description) {
+    private boolean setDescription(String description) {
         if (TextUtils.isEmpty(description)) {
             mDescriptionLayout.setVisibility(View.GONE);
-            return;
+            return false;
         }
 
         mDescriptionLayout.setVisibility(View.VISIBLE);
         mDescriptionTextView.setText(description);
+        return true;
     }
 
     private String joinString(List<String> stringList) {
